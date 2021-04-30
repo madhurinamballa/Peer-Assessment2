@@ -1,0 +1,54 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><title>MyResarch_assessment2.md</title><style></style></head><body id="preview">
+<h1 class="code-line" data-line-start=1 data-line-end=2><a id="creating_directory_1"></a>creating directory</h1>
+<p class="has-line-data" data-line-start="2" data-line-end="3">setwd(“F:/Desktop backup 19-03-2021/Research-assessmt”)</p>
+<h1 class="code-line" data-line-start=4 data-line-end=5><a id="importing_libraries_4"></a>importing libraries</h1>
+<p class="has-line-data" data-line-start="5" data-line-end="7">install.packages(“knitr”)<br>
+library(knitr)</p>
+<p class="has-line-data" data-line-start="8" data-line-end="10">install.packages(“dplyr”)<br>
+library(dplyr)</p>
+<p class="has-line-data" data-line-start="11" data-line-end="13">install.packages(“tidyr”)<br>
+library(tidyr)</p>
+<p class="has-line-data" data-line-start="14" data-line-end="16">install.packages(“ggplot2”)<br>
+library(ggplot2)</p>
+<h1 class="code-line" data-line-start=17 data-line-end=18><a id="downloading_Storm_Data_file_17"></a>downloading Storm Data file</h1>
+<p class="has-line-data" data-line-start="18" data-line-end="19">download.file(&quot;<a href="https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2FStormData.csv.bz2">https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2FStormData.csv.bz2</a>&quot;, destfile=“stormData.csv.bz2”)</p>
+<h1 class="code-line" data-line-start=20 data-line-end=21><a id="data_processing_20"></a>data processing</h1>
+<p class="has-line-data" data-line-start="21" data-line-end="22">dsNOAA &lt;- read.csv(bzfile(“stormData.csv.bz2”), sep=&quot;,&quot;, header=T)</p>
+<p class="has-line-data" data-line-start="23" data-line-end="24">tidyNOAA &lt;- dsNOAA[,c(‘EVTYPE’,‘FATALITIES’,‘INJURIES’, ‘PROPDMG’, ‘PROPDMGEXP’, ‘CROPDMG’, ‘CROPDMGEXP’)]</p>
+<p class="has-line-data" data-line-start="25" data-line-end="30">tidyNOAA$PROPDMGNUM = 0<br>
+tidyNOAA[tidyNOAA$PROPDMGEXP == “H”, ]$PROPDMGNUM = tidyNOAA[tidyNOAA$PROPDMGEXP == “H”, ]$PROPDMG * 10^2<br>
+tidyNOAA[tidyNOAA$PROPDMGEXP == “K”, ]$PROPDMGNUM = tidyNOAA[tidyNOAA$PROPDMGEXP == “K”, ]$PROPDMG * 10^3<br>
+tidyNOAA[tidyNOAA$PROPDMGEXP == “M”, ]$PROPDMGNUM = tidyNOAA[tidyNOAA$PROPDMGEXP == “M”, ]$PROPDMG * 10^6<br>
+tidyNOAA[tidyNOAA$PROPDMGEXP == “B”, ]$PROPDMGNUM = tidyNOAA[tidyNOAA$PROPDMGEXP == “B”, ]$PROPDMG * 10^9</p>
+<p class="has-line-data" data-line-start="31" data-line-end="36">tidyNOAA$CROPDMGNUM = 0<br>
+tidyNOAA[tidyNOAA$CROPDMGEXP == “H”, ]$CROPDMGNUM = tidyNOAA[tidyNOAA$CROPDMGEXP == “H”, ]$CROPDMG * 10^2<br>
+tidyNOAA[tidyNOAA$CROPDMGEXP == “K”, ]$CROPDMGNUM = tidyNOAA[tidyNOAA$CROPDMGEXP == “K”, ]$CROPDMG * 10^3<br>
+tidyNOAA[tidyNOAA$CROPDMGEXP == “M”, ]$CROPDMGNUM = tidyNOAA[tidyNOAA$CROPDMGEXP == “M”, ]$CROPDMG * 10^6<br>
+tidyNOAA[tidyNOAA$CROPDMGEXP == “B”, ]$CROPDMGNUM = tidyNOAA[tidyNOAA$CROPDMGEXP == “B”, ]$CROPDMG * 10^9</p>
+<h1 class="code-line" data-line-start=37 data-line-end=38><a id="Across_the_United_States_which_types_of_events_as_indicated_in_the_EVTYPE_variable_are_most_harmful_with_respect_to_population_health__37"></a>Across the United States, which types of events (as indicated in the EVTYPE variable) are most harmful with respect to population health ?</h1>
+<p class="has-line-data" data-line-start="39" data-line-end="42">fatalities &lt;- aggregate(FATALITIES ~ EVTYPE, data=tidyNOAA, sum)<br>
+fatalities &lt;- fatalities[order(-fatalities$FATALITIES), ][1:10, ]<br>
+fatalities$EVTYPE &lt;- factor(fatalities$EVTYPE, levels = fatalities$EVTYPE)</p>
+<p class="has-line-data" data-line-start="43" data-line-end="47">ggplot(fatalities, aes(x = EVTYPE, y = FATALITIES)) +<br>
+geom_bar(stat = “identity”, fill = “red”, las = 3) +<br>
+theme(axis.text.x = element_text(angle = 90, hjust = 1)) +<br>
+xlab(“Event Type”) + ylab(“Fatalities”) + ggtitle(“Number of fatalities by top 10 Weather Events”)</p>
+<h1 class="code-line" data-line-start=48 data-line-end=49><a id="Event_Type_48"></a>Event Type</h1>
+<p class="has-line-data" data-line-start="49" data-line-end="52">injuries &lt;- aggregate(INJURIES ~ EVTYPE, data=tidyNOAA, sum)<br>
+injuries &lt;- injuries[order(-injuries$INJURIES), ][1:10, ]<br>
+injuries$EVTYPE &lt;- factor(injuries$EVTYPE, levels = injuries$EVTYPE)</p>
+<p class="has-line-data" data-line-start="53" data-line-end="57">ggplot(injuries, aes(x = EVTYPE, y = INJURIES)) +<br>
+geom_bar(stat = “identity”, fill = “red”, las = 3) +<br>
+theme(axis.text.x = element_text(angle = 90, hjust = 1)) +<br>
+xlab(“Event Type”) + ylab(“Injuries”) + ggtitle(“Number of injuries by top 10 Weather Events”)</p>
+<h1 class="code-line" data-line-start=58 data-line-end=59><a id="Across_the_United_States_which_types_of_events_have_the_greatest_economic_consequences__58"></a>Across the United States, which types of events have the greatest economic consequences ?</h1>
+<h1 class="code-line" data-line-start=59 data-line-end=60><a id="EventType_59"></a>Event-Type</h1>
+<p class="has-line-data" data-line-start="61" data-line-end="65">damages &lt;- aggregate(PROPDMGNUM + CROPDMGNUM ~ EVTYPE, data=tidyNOAA, sum)<br>
+names(damages) = c(“EVTYPE”, “TOTALDAMAGE”)<br>
+damages &lt;- damages[order(-damages$TOTALDAMAGE), ][1:10, ]<br>
+damages$EVTYPE &lt;- factor(damages$EVTYPE, levels = damages$EVTYPE)</p>
+<p class="has-line-data" data-line-start="66" data-line-end="70">ggplot(damages, aes(x = EVTYPE, y = TOTALDAMAGE)) +<br>
+geom_bar(stat = “identity”, fill = “red”, las = 3) +<br>
+theme(axis.text.x = element_text(angle = 90, hjust = 1)) +<br>
+xlab(“Event Type”) + ylab(“Damages ($)”) + ggtitle(“Property &amp; Crop Damages by top 10 Weather Events”)</p>
+</body></html>
